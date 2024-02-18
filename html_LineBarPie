@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Ensures proper rendering and touch zooming on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Budget Tracker</title>
+    <!-- Link to the external CSS for styling -->
+    <link rel="stylesheet" href="css_budget.css">
+    <!-- Include Chart.js from CDN for creating interactive charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Main container for the budget tracker -->
+    <div class="container">
+        <!-- Main heading for the application -->
+        <h1>Personal Budget Tracker</h1>
+        
+        <!-- Section for input forms (income and expenses) -->
+        <div class="input-section">
+            <!-- Form for entering monthly income -->
+            <form id="income-form">
+                <label for="income">Monthly Income:</label>
+                <input type="number" id="income" placeholder="Enter your income">
+                <button type="submit">Add Income</button>
+            </form>
+            
+            <!-- Form for entering expenses -->
+            <form id="expense-form">
+                <label for="expense-name">Expense Name:</label>
+                <input type="text" id="expense-name" placeholder="Name">
+                <label for="expense-amount">Amount:</label>
+                <input type="number" id="expense-amount" placeholder="Amount">
+                <button type="submit">Add Expense</button>
+            </form>
+            
+            <!-- Button to reset the entered data -->
+            <button id="reset-button" type="button">Reset</button>
+        </div>
+        
+        <!-- Section for displaying the summary of income, expenses, and balance -->
+        <div class="summary-section">
+            <h2>Summary</h2>
+            <p id="total-income">Total Income: $0</p>
+            <p id="total-expenses">Total Expenses: $0</p>
+            <p id="balance">Balance: $0</p>
+        </div>
+
+        <!-- Dropdown for selecting chart type -->
+        <div class="chart-type-selector">
+            <label for="chartType">Select Chart Type:</label>
+            <select id="chartType">
+                <option value="bar">Bar</option>
+                <option value="line">Line</option>
+                <option value="pie">Pie</option>
+            </select>
+            <button id="changeChartType">Show Chart</button>
+        </div>
+        
+        <!-- Section for the Chart.js chart visualization -->
+        <div class="chart-section">
+            <!-- Canvas element where the Chart.js chart will be rendered -->
+            <canvas id="budgetChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Link to the external JavaScript file that contains the logic for the budget tracker -->
+    <script src="js_budget.js"></script>
+</body>
+</html>
