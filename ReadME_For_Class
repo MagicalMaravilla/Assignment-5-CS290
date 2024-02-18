@@ -1,0 +1,29 @@
+This read me is to explain wht differences between the budget tracker application I made with a simple bar graphm, and turn it into a chart that has a bar, line, and pie chart showing the power of javascript, and charts.js
+my original file named budget_hmtl/css/js has only the bar chart
+the new files with the LineBarPie, have exactly what the file says as Line ,Bar, Pie, charts
+I had to add a drop down to choose a new selection, and then click show chart to see the new chart with current expenses.
+
+Enhanced functions:
+Dynamic Visualization: The bar chart represents how each expense chips away at the total income offering a visual representation of the remaining balance after each expense.
+
+Line Chart: 
+The line chart allows users to visualize how each expense adds up over time, although this seems a little lackluster of a way to use this chart
+
+Pie Chart: 
+This helps you visualize information based on a pie ratio with different colors for each expense.
+
+Implementation:
+Chart type Selection: Users can select their preferred chart type with a dropdown menu, allowing them to switch between bar, line and piechart.
+
+Enhanced Data Representation: 
+Each chart type has been tailored to represent financial data.
+
+Technical enchancements:
+Modular Data generation the getChartData function provides chart specific options
+
+interactive user experince Enhanced event listeners facillitate ineraction smoothly with chart type selections
+more on enchanced listenining: enhanced listening is about applying the principles of data processing and algorithmic efficiency to human communication.
+It's about actively engaging with the information being shared, analyzing it for deeper understanding, and responding in a way that advances my project effectively.
+
+The enhanced version of my budget tracker shows you the power of js and chart.js and how you can apply the same financial information in different ways with just a few tweaks.
+Tools like these are helpful to show you where your money is going without having to write down each thing and add them up saving time, which is what a lot of computer science is about.
