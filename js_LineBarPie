@@ -1,0 +1,192 @@
+// Global variables to store financial data and the chart instance
+let income = { amount: 0 }; // Object to store total income
+let expenses = []; // Array to store individual expenses
+let totalIncome = 0; // Variable to accumulate total income
+let totalExpenses = 0; // Variable to accumulate total expenses
+let balance = 0; // Variable to calculate the balance after expenses
+let budgetChart; // Variable to store the Chart.js chart instance
+
+// Event listener to initialize the chart once the DOM content is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeChart('bar'); // Initialize with a bar chart by default
+    // Add event listener for the chart type change button
+    document.getElementById('changeChartType').addEventListener('click', handleChangeChartType);
+});
+
+// Function to handle income form submission
+function handleIncomeFormSubmit(e) {
+    e.preventDefault(); // Prevent the form from submitting in the traditional way
+    const incomeInput = document.getElementById('income'); // Get the income input element
+    const incomeValue = parseFloat(incomeInput.value); // Parse the input value to a float
+    // Check if the income value is positive
+    if (incomeValue > 0) {
+        totalIncome += incomeValue; // Add the value to total income
+        calculateTotals(); // Recalculate totals
+        updateUI(); // Update the user interface with the new values
+    } else {
+        alert('Please enter a positive number for income.'); // Alert if the input is not positive
+    }
+}
+
+// Function to handle expense form submission
+function handleExpenseFormSubmit(e) {
+    e.preventDefault(); // Prevent the form from submitting in the traditional way
+    const expenseName = document.getElementById('expense-name').value; // Get the expense name input
+    const expenseAmount = parseFloat(document.getElementById('expense-amount').value); // Parse the expense amount to a float
+    // Check if the expense amount is positive
+    if (expenseAmount > 0) {
+        expenses.push({ name: expenseName, amount: expenseAmount }); // Add the expense to the expenses array
+        calculateTotals(); // Recalculate totals
+        updateUI(); // Update the user interface with the new values
+    } else {
+        alert('Please enter a positive number for the expense amount.'); // Alert if the input is not positive
+    }
+}
+
+// Function to reset all financial data and input fields
+function handleReset() {
+    // Reset all financial data
+    income = { amount: 0 };
+    expenses = [];
+    totalIncome = 0;
+    totalExpenses = 0;
+    balance = 0;
+    // Clear input fields
+    document.getElementById('income').value = '';
+    document.getElementById('expense-name').value = '';
+    document.getElementById('expense-amount').value = '';
+    updateUI(); // Update the user interface
+    initializeChart('bar'); // Reinitialize the chart as a bar chart
+}
+
+// Function to change the chart type based on user selection
+function handleChangeChartType() {
+    const selectedChartType = document.getElementById('chartType').value; // Get the selected chart type
+    initializeChart(selectedChartType); // Initialize the chart with the selected type
+}
+
+// Function to calculate total expenses and balance
+function calculateTotals() {
+    // Calculate total expenses by summing up all expense amounts
+    totalExpenses = expenses.reduce((acc, curr) => acc + curr.amount, 0);
+    // Calculate balance by subtracting total expenses from total income
+    balance = totalIncome - totalExpenses;
+    updateChartData(); // Update the chart data with the new totals
+}
+
+// Function to update the UI with the latest financial data
+function updateUI() {
+    // Update the text content of UI elements to display the latest financial data
+    document.getElementById('total-income').textContent = `Total Income: $${totalIncome}`;
+    document.getElementById('total-expenses').textContent = `Total Expenses: $${totalExpenses}`;
+    document.getElementById('balance').textContent = `Balance: $${balance}`;
+}
+
+// Function to initialize or update the chart with dynamic data
+function initializeChart(chartType) {
+    const ctx = document.getElementById('budgetChart').getContext('2d'); // Get the canvas context
+    if (budgetChart) {
+        budgetChart.destroy(); // Destroy the current chart instance if it exists
+    }
+    // Create a new chart instance with the specified type and data
+    budgetChart = new Chart(ctx, {
+        type: chartType, // Chart type (bar, line, or pie)
+        data: getChartData(chartType), // Data for the chart
+        options: getChartOptions(chartType) // Options for the chart
+    });
+}
+
+// Function to generate chart data based on the chart type
+function getChartData(chartType) {
+    let data = {
+        labels: ['Total Income'], // Start with 'Total Income' as the first label
+        datasets: [] // Initialize datasets array
+    };
+
+    if (chartType === 'pie') {
+        // Logic for pie chart remains the same
+        data.datasets.push({
+            data: expenses.map(expense => expense.amount),
+            backgroundColor: expenses.map((_, index) => `hsl(${index * 360 / expenses.length}, 70%, 50%)`)
+        });
+    } else if (chartType === 'line') {
+        // Logic for line chart remains the same
+        let cumulativeExpenses = expenses.reduce((acc, curr, i) => {
+            if (i === 0) acc.push(curr.amount);
+            else acc.push(acc[i-1] + curr.amount);
+            return acc;
+        }, []);
+        data.labels = expenses.map(expense => expense.name);
+        data.datasets.push({
+            label: 'Cumulative Expenses',
+            data: cumulativeExpenses,
+            fill: false,
+            borderColor: 'rgba(255, 99, 132, 1)',
+            tension: 0.1
+        });
+        data.datasets.push({
+            label: 'Total Income',
+            data: Array(expenses.length).fill(totalIncome),
+            fill: false,
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderDash: [5, 5]
+        });
+    } else {
+        // Adjusted logic for 'bar' chart to show remaining income after each expense
+        let remainingIncome = totalIncome; // Start with total income
+        let incomeAfterExpenses = expenses.map(expense => {
+            remainingIncome -= expense.amount; // Subtract each expense from the remaining income
+            return remainingIncome; // Return the updated remaining income
+        });
+
+        // Labels for the bar chart
+        data.labels = ['Total Income'].concat(expenses.map(expense => expense.name));
+
+        // Data for the bar chart, starting with total income and then showing remaining income after each expense
+        let barData = [totalIncome].concat(incomeAfterExpenses);
+
+        // Construct the dataset for the bar chart
+        data.datasets.push({
+            label: 'Remaining Income After Expenses',
+            data: barData,
+            backgroundColor: ['rgba(54, 162, 235, 0.7)'].concat(expenses.map(_ => 'rgba(255, 99, 132, 0.7)')),
+            borderColor: ['rgba(54, 162, 235, 1)'].concat(expenses.map(_ => 'rgba(255, 99, 132, 1)')),
+            borderWidth: 1
+        });
+    }
+
+    return data;
+}
+
+
+// Function to generate chart options based on the chart type
+function getChartOptions(chartType) {
+    let options = {
+        scales: {
+            y: {
+                beginAtZero: true // Start the Y-axis from zero
+            }
+        }
+    };
+
+    // Pie charts do not use scales, so remove them for pie charts
+    if (chartType === 'pie') {
+        delete options.scales;
+    }
+
+    return options;
+}
+
+// Function to update the chart data dynamically
+function updateChartData() {
+    if (budgetChart) {
+        // Update the chart data and refresh the chart
+        budgetChart.data = getChartData(budgetChart.config.type);
+        budgetChart.update();
+    }
+}
+
+// Attach event listeners to form submissions and the reset button
+document.getElementById('income-form').addEventListener('submit', handleIncomeFormSubmit);
+document.getElementById('expense-form').addEventListener('submit', handleExpenseFormSubmit);
+document.getElementById('reset-button').addEventListener('click', handleReset);
